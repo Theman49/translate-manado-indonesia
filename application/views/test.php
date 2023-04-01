@@ -101,7 +101,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 // let listResponse = response.slice(0, 5)
                 let listResponse = response.slice(0,10)
                 listResponse = listResponse.map((item) => `
-                    <li class="d-flex justify-content-between list-group-item" onclick="getTranslatedWord(this.children[0].innerText)">
+                    <li class="d-flex justify-content-between list-group-item" onclick="getTranslatedWord(${item.no}+'_'+this.children[0].innerText)">
                         <p class="mb-0">${item.compared_word}</p>
                         <p class="mb-0 text-secondary">${item.lev_dist}</p>
                     </li>`)
@@ -152,7 +152,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         // let listResponse = response.slice(0, 5)
                         let listResponse = response.slice(0,10)
                         listResponse = listResponse.map((item) => `
-                            <li class="d-flex justify-content-between list-group-item" onclick="getTranslatedWord(this.children[0].innerText)">
+                            <li class="d-flex justify-content-between list-group-item" onclick="getTranslatedWord(${item.no}+'_'+this.children[0].innerText)">
                                 <p class="mb-0">${item.word}</p>
                                 <p class="mb-0 text-secondary">${item.iteration}</p>
                             </li>`)
@@ -187,12 +187,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         function getTranslatedWord(val){
-                inputWord.value = val
+                inputWord.value = (val.split("_"))[1]
                 const xmlhttp = new XMLHttpRequest();
                 xmlhttp.onload = function() {
                     document.getElementById("result_word").value = this.responseText
                 }
-                xmlhttp.open("GET", "./test/get_translated_word?word_query=" + val +"&from_lang=" + fromLang);
+                xmlhttp.open("GET", "./test/get_translated_word?no="+(val.split("_"))[0]+"&word_query=" + (val.split("_"))[1] +"&from_lang=" + fromLang);
                 xmlhttp.send();
         }
 
