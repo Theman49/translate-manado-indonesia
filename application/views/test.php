@@ -196,6 +196,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 xmlhttp.send();
         }
 
+        // not used
         function countRaita(){
                 const pattern = document.getElementById("pattern");
                 const text = document.getElementById("text");
