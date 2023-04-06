@@ -201,9 +201,19 @@ class Test extends CI_Controller {
 		$query = $this->db->get('dataset_skripsi');
 		$data = $query->result();
 
-		$input = array("sya", "kamu", "mal", "makn", "ikan");
-		// Ground truth data
-		$actual = array("kita", "ngana", "malo", "ceke", "ikang");
+		$query = $this->db->get('coba_akurasi');
+		$data_input = $query->result();
+
+		$input = array_map(function($item){
+					return strtolower($item->bahasa_manado);
+				}, $data_input);
+		$actual = array_map(function($item){
+					return strtolower($item->bahasa_indonesia);
+				}, $data_input);
+
+		// $input = array("sya", "kamu", "mal", "makn", "ikan");
+		// // Ground truth data
+		// $actual = array("kita", "ngana", "malo", "ceke", "ikang");
 
 
 		function generate_table_bmbc($pattern){
@@ -369,7 +379,10 @@ class Test extends CI_Controller {
 		$tp = 0;
 		$fp = 0;
 		for($i=0; $i<count($actual); $i++){
-			$counted_raita = count_raita($data, $word_query=$input[$i], $from_lang="indonesia");
+			$from_lang = "manado";
+			$target_lang = "indonesia";
+
+			$counted_raita = count_raita($data, $word_query=$input[$i], $from_lang);
 
 			if(count($counted_raita) != 0){
 				usort($counted_raita, "sortByRaitaIter");
@@ -399,7 +412,7 @@ class Test extends CI_Controller {
 			}
 
 			// count using lev dist when raita not found
-			$counted_lev_dist = count_lev_dist($data, $word_query=$input[$i], $target_lang="manado");
+			$counted_lev_dist = count_lev_dist($data, $word_query=$input[$i], $target_lang);
 			usort($counted_lev_dist, "sortByLevDist");
 			$result_10 = array_slice($counted_lev_dist, 0, 10);
 			
@@ -427,7 +440,13 @@ class Test extends CI_Controller {
 		}
 		echo "tp = $tp <br>";
 		echo "fp = fn = $fp";
+		$fn = $fp;
+		$tn = 0;
 
+		echo "<br>";
+		$accuracy = ($tp + $tn) / ($tp + $tn + $fp + $fn) * 100;
+		echo "accuracy = ($tp + $tn) / ($tp + $tn + $fp + $fn) <br>";
+		echo "accuracy = $accuracy %";
 
 		die();
 
