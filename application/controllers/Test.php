@@ -484,4 +484,62 @@ class Test extends CI_Controller {
 		echo "accuracy = $accuracy";
 
 	}
+
+	public function confusion_matrix_table(){
+		$sql = "SELECT * FROM confusion_matrix WHERE col_1 = 'nama'";
+		$query = $this->db->query($sql);
+		$result_header = $query->result_array()[0];
+
+		
+		$query = $this->db->get("confusion_matrix");
+
+		$getReference = get_object_vars($query->result()[2]);
+		$reference = [];
+		$idx = 0; 
+		foreach($getReference as $key){
+			if($idx == 0){
+				$idx += 1;
+				continue;
+			}else{
+				array_push($reference, $key);
+				$idx += 1;
+			}
+		}
+		
+		$scores = [];
+		$idx = 0;
+		foreach($reference as $key){
+			array_push(
+				$scores,
+				[$key => 0]
+			);
+		}
+
+
+		foreach($query->result() as $row){
+			$row = get_object_vars($row);
+
+			if(trim($row['col_1']) == 'nama'){
+				continue;
+			}
+			$idx = 0;
+			foreach($row as $value){
+				if($idx == 0){
+					$idx += 1;
+					continue;
+				}else{
+					if($value == $reference[$idx-1]){
+						$scores[$idx-1][$reference[$idx-1]] += 1;
+					}
+					$idx += 1;
+				}
+			}
+		}
+
+		return $this->load->view('confusion_matrix', [
+			'header_table' => $result_header,
+			'scores' => $scores,
+			'reference' => $reference
+		]);
+	}
 }
