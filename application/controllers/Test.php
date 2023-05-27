@@ -489,10 +489,10 @@ class Test extends CI_Controller {
 		$sql = "SELECT * FROM confusion_matrix WHERE col_1 = 'nama'";
 		$query = $this->db->query($sql);
 		$result_header = $query->result_array()[0];
-
 		
 		$query = $this->db->get("confusion_matrix");
 
+		// create table
 		$getReference = get_object_vars($query->result()[2]);
 		$reference = [];
 		$idx = 0; 
@@ -516,6 +516,8 @@ class Test extends CI_Controller {
 		}
 
 
+		// return 0;
+
 		foreach($query->result() as $row){
 			$row = get_object_vars($row);
 
@@ -536,10 +538,109 @@ class Test extends CI_Controller {
 			}
 		}
 
-		return $this->load->view('confusion_matrix', [
+		// iterate loop method
+		$scores = [];
+		$names = [];
+		$actual = [];
+		foreach($query->result() as $row){
+			if(trim($row->col_1) == "nama"){
+				$get_col =  get_object_vars($row);
+
+				$idx = 0;
+				foreach($get_col as $col){
+					if($idx == 0){
+						$idx += 1;
+						continue;
+					}else{
+						array_push($actual, strtolower($col));
+					}
+				}
+
+				continue;
+			}
+			
+
+			$name = $row->col_1;
+			array_push(
+				$names,
+				$name
+			);
+			// array_push(
+			// 	$scores,
+			// 	[$name => 0]
+			// );
+
+			// echo var_dump($names);
+			$idx = 0;
+			$get_val_col =  get_object_vars($row);
+			$score = 0;
+			$arr_score = [];
+			foreach($get_val_col as $val_col){
+				if($idx == 0){
+					$idx += 1;
+					continue;
+				}
+
+				if($idx-1 <= 4){
+					$this->db->where("bahasa_manado", $actual[$idx - 1]);
+				}else{
+					$this->db->where("bahasa_indonesia", $actual[$idx - 1]);
+				}
+				$query = $this->db->get('dataset_skripsi');
+				$result = $query->result();
+
+				$founded = 0;
+				foreach($result as $row){
+					if($idx-1 <= 4){
+						if(trim(strtolower($row->bahasa_indonesia)) == trim(strtolower($val_col))){
+							$founded = 1;
+						}
+					}else{
+						if(trim(strtolower($row->bahasa_manado)) == trim(strtolower($val_col))){
+							$founded = 1;
+						}
+					}
+				}
+				if($founded == 1){
+					$score += 1;
+					array_push($arr_score, 1);
+				}else{
+					array_push($arr_score, 0);
+				}
+				$idx += 1;
+
+			}
+			array_push(
+				$scores, 
+				[
+					$name => $score,
+					'array_score' => $arr_score
+				]
+			);
+			// break;
+		}
+
+		$sum = 0;
+		$idx = 0;
+		foreach($scores as $score){
+			$sum += $score[$names[$idx]];
+			$idx++;
+		}
+
+		$average = $sum / count($scores[0]['array_score']);
+
+		// echo var_dump($scores);
+		$sql = "SELECT * FROM confusion_matrix WHERE col_1 = 'nama'";
+		$query = $this->db->query($sql);
+		$result_header = $query->result_array()[0];
+		
+
+		return $this->load->view('confusion_matrix_loop', [
 			'header_table' => $result_header,
+			// 'reference' => $reference
 			'scores' => $scores,
-			'reference' => $reference
+			'names' => $names,
+			'average' => $average
 		]);
 	}
 }

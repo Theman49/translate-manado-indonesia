@@ -19,7 +19,8 @@
     </tr>
   </thead>
   <tbody>
-    <?php
+  <?php
+  /*
         $count_data = count($header_table) - 1;
         $no = 0;
         foreach($header_table as $row){
@@ -44,11 +45,36 @@
             $no+=1;
         }
        
+        */
     ?>
     <tr>
         <td></td>
     </tr>
+
+
   </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>Positif</th>
+            <th>Negatif</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Positif</th>
+            <th>10</th>
+            <th>0</th>
+        </tr>
+        <tr>
+            <th>Negatif</th>
+            <th>0</th>
+            <th>0</th>
+        </tr>
+    </tbody>
 </table>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
