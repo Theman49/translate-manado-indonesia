@@ -12,8 +12,13 @@
     <thead>
         <tr>
             <?php
+		$idx = 0;
                 foreach($header_table as $row){
-                    echo "<th>".$row."</th>";
+		    if($idx == 1){
+			echo "<td style='background-color: #ddd; color: black'>kosakata</td>";
+		    }
+		    echo "<th style='background-color: #ddd; color: black'>".$row."</th>";
+		    $idx++;
                 }
             ?>
             <th>jumlah</th>
@@ -23,10 +28,12 @@
             <?php
                 $idx = 0;
                 foreach($scores as $score){
+		    $colName = "col_".$idx+2;
                     echo "<tr>";
-                    echo "<th>".$names[$idx]."</th>";
+                    echo "<td>".$names[$idx]."</td>";
+		    echo "<th style='background-color: #ddd; color: black'>".$header_table[$colName]."</th>";
                     foreach($score['array_score'] as $v){
-                        echo "<td>".$v."</td>";
+                        echo "<td style='text-align: center'>".$v."</td>";
                     }
                     echo "<td>".$score[$names[$idx]]."</td>";
                     echo "</tr>";
@@ -34,8 +41,8 @@
                 }
             ?>
             <tr>
-                <td colspan="11" style="text-align: right">Rata-rata</td>
-                <td><?=$average?></td>
+                <td colspan="12" style="text-align: right; background-color: #ddd; ">Rata-rata</td>
+                <td style="background-color: #ddd; "><?=$average?></td>
             </tr>
     </tbody>
 </table>
