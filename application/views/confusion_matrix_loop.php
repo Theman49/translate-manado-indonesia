@@ -41,11 +41,25 @@
                 }
             ?>
             <tr>
-                <td colspan="12" style="text-align: right; background-color: #ddd; ">Rata-rata</td>
-                <td style="background-color: #ddd; "><?=$average?></td>
+	    <?php
+		$sum = 0;
+		$idx = 0;
+		foreach($scores as $score){
+			$sum += $score[$names[$idx]];
+			$idx++;
+		}
+
+		$average = $sum / count($scores[0]['array_score']);
+	    ?>
+                <td colspan="12" style="text-align: right; background-color: #ddd; ">Total</td>
+                <td style="background-color: #ddd; "><?=$sum?></td>
             </tr>
     </tbody>
 </table>
+
+    <p>Accuracy = (Jumlah Prediksi Benar / total prediksi) * 100%</p>
+    <p>Accuracy = (100 / <?=$sum ?>) * 100%</p>
+    <p>Accuracy = <?=$average * 10?>%</p>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
