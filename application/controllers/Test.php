@@ -201,14 +201,17 @@ class Test extends CI_Controller {
 		$query = $this->db->get('dataset_skripsi');
 		$data = $query->result();
 
-		$query = $this->db->get('coba_akurasi');
+		// $query = $this->db->get('coba_akurasi');
+		$query = $this->db->get('dataset_akurasi_8_jun_2023');
 		$data_input = $query->result();
 
 		$input = array_map(function($item){
-					return strtolower($item->bahasa_manado);
+					// return strtolower($item->bahasa_manado)
+					return strtolower($item->predict_source_translations);
 				}, $data_input);
 		$actual = array_map(function($item){
-					return strtolower($item->bahasa_indonesia);
+					// return strtolower($item->bahasa_indonesia);
+					return strtolower($item->actual_translations);
 				}, $data_input);
 
 		// $input = array("sya", "kamu", "mal", "makn", "ikan");
@@ -366,14 +369,14 @@ class Test extends CI_Controller {
 			 return $item1['lev_dist'] < $item2['lev_dist'] ? -1 : 1;
 		}
 
-		foreach($input as $inp){
-			echo "$inp, ";
-		}
-		echo "<br>";
+		// foreach($input as $inp){
+		// 	echo "$inp, ";
+		// }
+		// echo "<br>";
 
-		foreach($actual as $act){
-			echo "$act, ";
-		}
+		// foreach($actual as $act){
+		// 	echo "$act, ";
+		// }
 
 		echo "<br>";
 		$tp = 0;
@@ -382,34 +385,34 @@ class Test extends CI_Controller {
 			$from_lang = "manado";
 			$target_lang = "indonesia";
 
-			$counted_raita = count_raita($data, $word_query=$input[$i], $from_lang);
+			// $counted_raita = count_raita($data, $word_query=$input[$i], $from_lang);
 
-			if(count($counted_raita) != 0){
-				usort($counted_raita, "sortByRaitaIter");
-				$result_10 = array_slice($counted_raita, 0, 10);
+			// if(count($counted_raita) != 0){
+			// 	usort($counted_raita, "sortByRaitaIter");
+			// 	$result_10 = array_slice($counted_raita, 0, 10);
 
-				echo "<b>".$input[$i]."-".$actual[$i]."</b><br>";
-				echo "$i. RAITA<br>";
-				foreach($result_10 as $res){
-					echo "word: ".$res['word']."<br>";
-					$trans =  "translated_word: ".$res['translated_word']."<br>";
-					if($res['translated_word'] == $actual[$i]){
-						$trans =  "<b>translated_word: ".$res['translated_word']."</b><br>";
-					}
-					echo $trans;
-					echo "-----------<br>";
-				}
+			// 	echo "<b>".$input[$i]."-".$actual[$i]."</b><br>";
+			// 	echo "$i. RAITA<br>";
+			// 	foreach($result_10 as $res){
+			// 		echo "word: ".$res['word']."<br>";
+			// 		$trans =  "translated_word: ".$res['translated_word']."<br>";
+			// 		if($res['translated_word'] == $actual[$i]){
+			// 			$trans =  "<b>translated_word: ".$res['translated_word']."</b><br>";
+			// 		}
+			// 		echo $trans;
+			// 		echo "-----------<br>";
+			// 	}
 
-				$is_exist = current(array_filter($result_10, function($item) use($actual, $i){
-					return $item['translated_word'] == $actual[$i];
-				}));	
-				if($is_exist != FALSE){
-					$tp+=1;
-				}else{
-					$fp+=1;
-				}
-				continue;
-			}
+			// 	$is_exist = current(array_filter($result_10, function($item) use($actual, $i){
+			// 		return $item['translated_word'] == $actual[$i];
+			// 	}));	
+			// 	if($is_exist != FALSE){
+			// 		$tp+=1;
+			// 	}else{
+			// 		$fp+=1;
+			// 	}
+			// 	continue;
+			// }
 
 			// count using lev dist when raita not found
 			$counted_lev_dist = count_lev_dist($data, $word_query=$input[$i], $target_lang);
@@ -438,12 +441,14 @@ class Test extends CI_Controller {
 				$fp+=1;
 			}
 		}
-		echo "tp = $tp <br>";
-		echo "fp = fn = $fp";
-		$fn = $fp;
 		$tn = 0;
+		echo "TP = $tp <br>";
+		echo "TN = $tn <br>";
+		echo "FP = FN = $fp <br>";
+		$fn = $fp;
 
 		echo "<br>";
+		echo "accuracy = (TP + TN) / (TP + TN + FP + FN) <br>";
 		$accuracy = ($tp + $tn) / ($tp + $tn + $fp + $fn) * 100;
 		echo "accuracy = ($tp + $tn) / ($tp + $tn + $fp + $fn) <br>";
 		echo "accuracy = $accuracy %";

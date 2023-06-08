@@ -10,8 +10,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <title>TEST</title>
+
     <style>
-        #suggestions {
+        #suggestions div.desc p {
+            color: rgb(95 74 203);
+        }
+        #suggestions ul {
             height: 300px;
             overflow: auto;
         }
@@ -38,8 +42,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <label for="input_word"><span id="label-input">Manado</span>:</label><br/>
                 <input class="w-100" type="text" id="input_word" onkeyup="doDelayedSearch(this.value)"/>
                 <div id="suggestions">
-                    <ul class="list-group ms-5">
-                    </ul>
+                    <div>
+                        <div class="desc">
+                        </div>
+                        <ul class="list-group ms-3">
+                        </ul>
+                    </div>
                 </div>
             </div>
             
@@ -105,6 +113,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <p class="mb-0">${item.compared_word}</p>
                         <p class="mb-0 text-secondary">${item.lev_dist}</p>
                     </li>`)
+                document.querySelector("#suggestions div.desc").innerHTML = "<p class='mt-1'>Kata yang mungkin anda maksud: </p>";
                 document.querySelector("#suggestions ul").innerHTML = listResponse.join("");
             }
             xmlhttp.open("GET", "./test/count_lev_dist?word_query=" + inputWord.value + "&target_lang=" + targetLang);
@@ -140,10 +149,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 xmlhttp.onload = function() {
                     let response = JSON.parse(this.responseText)
                     if(response.status == false){
-                        document.querySelector("#suggestions ul").innerHTML = `
-                            <li>${response.message}</li>
-                            <button class="w-fit" onclick="runLevenshtein()">Tampilkan Saran</button>
-                        `;
+                        // === to enable button, uncomment code below
+                        // document.querySelector("#suggestions ul").innerHTML = `
+                        //     <li>${response.message}</li>
+                        //     <button class="w-fit" onclick="runLevenshtein()">Tampilkan Saran</button>
+                        // `;
+
+                        // === to enable button, comment code below
+                        runLevenshtein();
                     }else{
                         response = response.data
                         response = response.sort((a,b) => (a.iteration > b.iteration) ? 1 : (a.iteration < b.iteration) ? -1 : 0)
